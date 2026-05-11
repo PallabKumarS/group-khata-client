@@ -14,12 +14,14 @@ interface DragDropProps {
   name: string;
   label?: string;
   multiple?: boolean;
+  folder?: string;
 }
 
 export function DragNDropUploader({
   name,
   label,
   multiple = false,
+  folder = "group-khata",
 }: DragDropProps) {
   const { setValue, resetField } = useFormContext();
   const [files, setFiles] = useState<File[]>([]);
@@ -39,7 +41,7 @@ export function DragNDropUploader({
       const tempUrls: { value: string }[] = [];
 
       for (const file of selectedFiles) {
-        const url = await uploadToCloudinary(file, "krishan-traders");
+        const url = await uploadToCloudinary(file, folder);
         tempUrls.push(...uploadedUrls, { value: url });
         setUploadedUrls([...uploadedUrls, { value: url }]);
       }
@@ -67,7 +69,7 @@ export function DragNDropUploader({
       const tempUrls: { value: string }[] = [];
 
       for (const file of droppedFiles) {
-        const url = await uploadToCloudinary(file);
+        const url = await uploadToCloudinary(file, folder);
         tempUrls.push(...uploadedUrls, { value: url });
         setUploadedUrls([...uploadedUrls, { value: url }]);
       }

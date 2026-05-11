@@ -9,12 +9,12 @@ import httpStatus from "http-status";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     await connectDB();
     await requireAuth(request);
-    const { id } = params;
+    const { id } = await params;
 
     const result = await UserModel.findById(id);
     if (!result) {
@@ -33,16 +33,16 @@ export async function GET(
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     await connectDB();
     const decoded = await requireAuth(request);
-    const { id } = params;
+    const { id } = await params;
     const body = await request.json();
 
     // Only admin or the user themselves can update
-    if (decoded.role !== "admin" && decoded.userId !== id) {
+    if (decoded.role !== "admin" && String(decoded.userId) !== String(id)) {
       throw new AppError(httpStatus.FORBIDDEN, "Forbidden");
     }
 
@@ -60,12 +60,12 @@ export async function PATCH(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     await connectDB();
     await requireAuth(request, ["admin"]);
-    const { id } = params;
+    const { id } = await params;
 
     const result = await UserService.deleteUserFromDB(id);
 

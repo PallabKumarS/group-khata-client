@@ -43,7 +43,7 @@ const updateUserInDB = async (id: string, payload: Partial<TUser>) => {
   }
 
   const user = await UserModel.findByIdAndUpdate(id, payload, {
-    new: true,
+    returnDocument: "after",
   });
 
   return user;
@@ -60,7 +60,7 @@ const updateUserStatusIntoDB = async (id: string) => {
     { _id: id },
     { status: isUserExist.status === "active" ? "blocked" : "active" },
     {
-      new: true,
+      returnDocument: "after",
     }
   );
   return result;
@@ -71,7 +71,7 @@ const updateUserRoleIntoDB = async (
   id: string,
   data: {
     role: string;
-  }
+  },
 ) => {
   const isUserExist = await UserModel.findOne({ _id: id });
   if (!isUserExist) {
@@ -81,7 +81,7 @@ const updateUserRoleIntoDB = async (
   if (isUserExist.role === "admin") {
     throw new AppError(
       httpStatus.BAD_REQUEST,
-      "This user is an admin. You cannot change his role."
+      "This user is an admin. You cannot change his role.",
     );
   }
 
@@ -89,7 +89,7 @@ const updateUserRoleIntoDB = async (
     { _id: id },
     { role: data.role },
     {
-      new: true,
+      returnDocument: "after",
     }
   );
 

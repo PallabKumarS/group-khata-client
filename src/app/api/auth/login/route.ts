@@ -1,6 +1,7 @@
 import { AuthService } from "@/server/modules/auth/auth.service";
 import { handleApiError } from "@/server/errors/handleApiError";
 import { connectDB } from "@/lib/connectDB";
+import status from "http-status";
 
 export async function POST(request: Request) {
   try {
@@ -11,7 +12,7 @@ export async function POST(request: Request) {
     if (!email || !password) {
       return Response.json(
         { success: false, message: "Email and password are required" },
-        { status: 400 }
+        { status: status.BAD_REQUEST },
       );
     }
 

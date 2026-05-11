@@ -14,6 +14,7 @@ const userSchema = new Schema<TUser, IUser>(
       default: "member",
     },
     address: { type: String },
+    phone: { type: String },
     profileImg: { type: String },
     status: { type: String, enum: ["active", "blocked"], default: "active" },
     isDeleted: { type: Boolean, default: false },
