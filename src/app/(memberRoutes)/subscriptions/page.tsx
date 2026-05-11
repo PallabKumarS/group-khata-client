@@ -1,4 +1,3 @@
-/** biome-ignore-all lint/suspicious/noExplicitAny: <> */
 "use client";
 
 import { useEffect, useState } from "react";
@@ -25,8 +24,11 @@ export default function SubscriptionsPage() {
       } else {
         toast.error(res?.message || "Failed to load subscriptions");
       }
+      // biome-ignore lint/suspicious/noExplicitAny: <>
     } catch (error: any) {
-      toast.error(error?.message || "An error occurred");
+      toast.error(
+        error?.message || "An error occurred while fetching subscriptions",
+      );
     } finally {
       setLoading(false);
     }
@@ -46,7 +48,7 @@ export default function SubscriptionsPage() {
   }
 
   return (
-    <Container className="py-12 text-left min-h-[calc(100vh-8rem)]">
+    <Container className="text-left">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 relative">
         <div>
           <div className="absolute -left-6 -top-6 w-24 h-24 bg-violet-500/20 rounded-full blur-3xl" />

@@ -4,78 +4,82 @@
 import { getValidToken } from "@/lib/verifyToken";
 import { updateTag } from "next/cache";
 
-// Get all users
-export const getAllUsers = async (
-  query?: Record<string, unknown>,
-): Promise<any> => {
+/**
+ * Fetch all users with optional filtering
+ */
+export const getAllUsers = async (query?: Record<string, unknown>) => {
   const queryString = new URLSearchParams(
     query as Record<string, string>,
   ).toString();
+  const token = await getValidToken();
 
   try {
     const res = await fetch(`${process.env.BASE_API}/users?${queryString}`, {
-      next: {
-        tags: ["users"],
-      },
-      headers: {
-        Authorization: await getValidToken(),
-      },
+      next: { tags: ["users"] },
+      headers: { Authorization: token },
     });
     return await res.json();
   } catch (error: any) {
-    return error;
+    return {
+      success: false,
+      message: error?.message || "Failed to fetch users",
+    };
   }
 };
 
-// Get single user
-export const getSingleUser = async (id: string): Promise<any> => {
+/**
+ * Fetch a single user by ID
+ */
+export const getSingleUser = async (id: string) => {
   const token = await getValidToken();
   try {
     const res = await fetch(`${process.env.BASE_API}/users/${id}`, {
-      next: {
-        tags: ["user"],
-      },
-      headers: {
-        Authorization: token,
-      },
+      next: { tags: ["user"] },
+      headers: { Authorization: token },
     });
     return await res.json();
   } catch (error: any) {
-    return error;
+    return {
+      success: false,
+      message: error?.message || "Failed to fetch user",
+    };
   }
 };
 
-// get personal info
-export const getMe = async (): Promise<any> => {
+/**
+ * Fetch currently logged in user info
+ */
+export const getMe = async () => {
   const token = await getValidToken();
 
   try {
     const res = await fetch(`${process.env.BASE_API}/users/me`, {
-      next: {
-        tags: ["me"],
-      },
+      next: { tags: ["me"] },
       headers: {
-        "content-type": "application/json",
+        "Content-Type": "application/json",
         Authorization: token,
       },
     });
 
-    const data = await res.json();
-
-    return data;
+    return await res.json();
   } catch (error: any) {
-    return error;
+    return {
+      success: false,
+      message: error?.message || "Failed to fetch profile",
+    };
   }
 };
 
-// update user
-export const updateUser = async (id: string, data: any): Promise<any> => {
+/**
+ * Update user information
+ */
+export const updateUser = async (id: string, data: any) => {
   const token = await getValidToken();
   try {
     const res = await fetch(`${process.env.BASE_API}/users/${id}`, {
       method: "PATCH",
       headers: {
-        "content-type": "application/json",
+        "Content-Type": "application/json",
         Authorization: token,
       },
       body: JSON.stringify(data),
@@ -87,50 +91,51 @@ export const updateUser = async (id: string, data: any): Promise<any> => {
 
     return await res.json();
   } catch (error: any) {
-    return error;
+    return {
+      success: false,
+      message: error?.message || "Failed to update user",
+    };
   }
 };
 
-// update user status
-export const updateUserStatus = async (
-  id: string,
-  status: string,
-): Promise<any> => {
+/**
+ * Toggle user status (Active/Blocked)
+ */
+export const toggleUserStatus = async (id: string) => {
   const token = await getValidToken();
 
   try {
     const res = await fetch(`${process.env.BASE_API}/users/${id}/status`, {
       method: "PATCH",
       headers: {
-        "content-type": "application/json",
+        "Content-Type": "application/json",
         Authorization: token,
       },
-
-      body: JSON.stringify({ status }),
     });
 
     updateTag("users");
     updateTag("user");
-    updateTag("me");
 
     return await res.json();
   } catch (error: any) {
-    return error;
+    return {
+      success: false,
+      message: error?.message || "Failed to update status",
+    };
   }
 };
 
-// update user role
-export const updateUserRole = async (
-  id: string,
-  role: string,
-): Promise<any> => {
+/**
+ * Update user role (Admin, Manager, User)
+ */
+export const updateUserRole = async (id: string, role: string) => {
   const token = await getValidToken();
 
   try {
     const res = await fetch(`${process.env.BASE_API}/users/${id}/role`, {
       method: "PATCH",
       headers: {
-        "content-type": "application/json",
+        "Content-Type": "application/json",
         Authorization: token,
       },
       body: JSON.stringify({ role }),
@@ -138,32 +143,36 @@ export const updateUserRole = async (
 
     updateTag("users");
     updateTag("user");
-    updateTag("me");
 
     return await res.json();
   } catch (error: any) {
-    return error;
+    return {
+      success: false,
+      message: error?.message || "Failed to update role",
+    };
   }
 };
 
-// Delete user
-export const deleteUser = async (id: string): Promise<any> => {
+/**
+ * Delete a user account
+ */
+export const deleteUser = async (id: string) => {
   const token = await getValidToken();
 
   try {
     const res = await fetch(`${process.env.BASE_API}/users/${id}`, {
       method: "DELETE",
-      headers: {
-        Authorization: token,
-      },
+      headers: { Authorization: token },
     });
 
     updateTag("users");
     updateTag("user");
-    updateTag("me");
 
     return await res.json();
   } catch (error: any) {
-    return error;
+    return {
+      success: false,
+      message: error?.message || "Failed to delete user",
+    };
   }
 };

@@ -47,7 +47,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <Container className="py-12 max-w-5xl text-left">
+    <Container className="text-left">
       <div className="mb-10 relative">
         <div className="absolute -left-6 -top-6 w-24 h-24 bg-violet-500/20 rounded-full blur-3xl" />
         <h1 className="text-4xl font-extrabold text-foreground relative z-10 tracking-tight">

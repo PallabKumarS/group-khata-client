@@ -21,6 +21,7 @@ export default function Navbar() {
     if (user) {
       links.push({ label: "Dashboard", href: "/dashboard" });
       links.push({ label: "Subscriptions", href: "/subscriptions" });
+      links.push({ label: "Payments", href: "/payments" });
 
       if (user.role === "manager" || user.role === "admin") {
         links.push({ label: "Manage", href: "/manage" });

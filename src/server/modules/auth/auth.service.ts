@@ -6,8 +6,8 @@ import type { TLoginUser } from "./auth.interface";
 import type { JwtPayload } from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import type { TUser } from "../user/user.interface";
-import { sendPasswordResetEmail } from "../../utils/sendMail";
 import config from "@/server/config";
+import { sendPasswordResetEmail } from "@/lib/sendMail";
 
 // login user here
 const loginUser = async (payload: TLoginUser) => {

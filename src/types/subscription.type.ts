@@ -5,6 +5,7 @@ export type TPaymentType = "monthly" | "yearly" | "custom";
 export type TJoinRequestStatus = "pending" | "accepted" | "rejected";
 
 export interface IJoinRequest {
+  _id: string;
   user: TUser;
   status: TJoinRequestStatus;
   requestedAt: Date;

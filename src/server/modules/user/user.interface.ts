@@ -35,7 +35,7 @@ export interface IUserPaymentMethod {
 }
 
 export interface TUser extends Document {
-  _id?: string;
+  _id: string;
 
   name: string;
   email: string;
