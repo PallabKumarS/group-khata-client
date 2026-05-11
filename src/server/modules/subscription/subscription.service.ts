@@ -80,7 +80,7 @@ const getManagerSubscriptions = async (managerId: string) => {
  */
 const getMemberSubscriptions = async (userId: string) => {
   return await SubscriptionModel.find({ members: userId })
-    .populate("manager", "name email profileImg phone")
+    .populate("manager", "name email profileImg phone paymentMethods")
     .populate("members", "name profileImg");
 };
 

@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2 } from "lucide-react";
+import { Loader2, ChevronsUpDown } from "lucide-react";
 import { format } from "date-fns";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -24,6 +24,12 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { DragNDropUploader } from "@/components/shared/DragNDropUploader";
 import {
   createPaymentSchema,
@@ -39,6 +45,21 @@ interface SubmitPaymentDialogProps {
   onSuccess: () => void;
 }
 
+const MONTHS = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
+
 export function SubmitPaymentDialog({
   open,
   onOpenChange,
@@ -53,7 +74,7 @@ export function SubmitPaymentDialog({
       subscription: "",
       paymentMethod: "",
       amount: 0,
-      month: format(new Date(), "MMMM"),
+      months: [format(new Date(), "MMMM")],
       year: new Date().getFullYear(),
       ss: "",
       note: "",
@@ -68,6 +89,20 @@ export function SubmitPaymentDialog({
     watch,
     reset,
   } = methods;
+
+  const selectedSubId = watch("subscription");
+  const selectedMonths = watch("months") || [];
+  const selectedSub = subscriptions.find((s) => s._id === selectedSubId);
+  const managerPaymentMethods = selectedSub?.manager?.paymentMethods || [];
+
+  // Auto-calculate amount
+  useEffect(() => {
+    if (selectedSub && selectedMonths.length > 0) {
+      setValue("amount", selectedSub.amount * selectedMonths.length);
+    } else {
+      setValue("amount", 0);
+    }
+  }, [selectedMonths, selectedSub, setValue]);
 
   const onSubmit = async (data: TCreatePaymentInput) => {
     setIsSubmitting(true);
@@ -84,19 +119,29 @@ export function SubmitPaymentDialog({
       // biome-ignore lint/suspicious/noExplicitAny: <>
     } catch (error: any) {
       toast.error(
-        error?.message || "An error occurred while submitting payment",
+        error.message || "An error occurred while submitting payment",
       );
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const onGroupSelect = (val: string) => {
-    setValue("subscription", val);
-    const sub = subscriptions.find((s) => s._id === val);
-    if (sub) {
-      setValue("amount", sub.amount);
+  const toggleMonth = (month: string) => {
+    const current = [...selectedMonths];
+    const index = current.indexOf(month);
+    if (index > -1) {
+      if (current.length > 1) {
+        current.splice(index, 1);
+      } else {
+        toast.error("At least one month must be selected");
+        return;
+      }
+    } else {
+      current.push(month);
     }
+    // Sort months to keep them in order
+    current.sort((a, b) => MONTHS.indexOf(a) - MONTHS.indexOf(b));
+    setValue("months", current);
   };
 
   return (
@@ -111,61 +156,9 @@ export function SubmitPaymentDialog({
         <FormProvider {...methods}>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 mt-4">
             <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>Month</Label>
-                  <Select
-                    onValueChange={(v) => setValue("month", v)}
-                    defaultValue={watch("month")}
-                  >
-                    <SelectTrigger className="bg-background/50">
-                      <SelectValue placeholder="Select Month" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {[
-                        "January",
-                        "February",
-                        "March",
-                        "April",
-                        "May",
-                        "June",
-                        "July",
-                        "August",
-                        "September",
-                        "October",
-                        "November",
-                        "December",
-                      ].map((m) => (
-                        <SelectItem key={m} value={m}>
-                          {m}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {errors.month && (
-                    <p className="text-xs text-destructive">
-                      {errors.month.message}
-                    </p>
-                  )}
-                </div>
-                <div className="space-y-2">
-                  <Label>Year</Label>
-                  <Input
-                    type="number"
-                    {...register("year", { valueAsNumber: true })}
-                    className="bg-background/50"
-                  />
-                  {errors.year && (
-                    <p className="text-xs text-destructive">
-                      {errors.year.message}
-                    </p>
-                  )}
-                </div>
-              </div>
-
               <div className="space-y-2">
                 <Label>Group / Subscription</Label>
-                <Select onValueChange={onGroupSelect}>
+                <Select onValueChange={(val) => setValue("subscription", val)}>
                   <SelectTrigger className="bg-background/50">
                     <SelectValue placeholder="Select Group" />
                   </SelectTrigger>
@@ -186,11 +179,61 @@ export function SubmitPaymentDialog({
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Amount (৳)</Label>
+                  <Label>Months</Label>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="w-full justify-between bg-background/50 font-normal"
+                      >
+                        {selectedMonths.length > 0
+                          ? `${selectedMonths.length} month(s) selected`
+                          : "Select Months"}
+                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-56 bg-card/95 backdrop-blur-xl border-border/40">
+                      {MONTHS.map((month) => (
+                        <DropdownMenuCheckboxItem
+                          key={month}
+                          checked={selectedMonths.includes(month)}
+                          onCheckedChange={() => toggleMonth(month)}
+                          onSelect={(e) => e.preventDefault()}
+                        >
+                          {month}
+                        </DropdownMenuCheckboxItem>
+                      ))}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                  {errors.months && (
+                    <p className="text-xs text-destructive">
+                      {errors.months.message}
+                    </p>
+                  )}
+                </div>
+                <div className="space-y-2">
+                  <Label>Year</Label>
+                  <Input
+                    type="number"
+                    {...register("year", { valueAsNumber: true })}
+                    className="bg-background/50"
+                  />
+                  {errors.year && (
+                    <p className="text-xs text-destructive">
+                      {errors.year.message}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Total Amount (৳)</Label>
                   <Input
                     type="number"
                     {...register("amount", { valueAsNumber: true })}
-                    className="bg-background/50"
+                    readOnly
+                    className="bg-muted/50 cursor-not-allowed font-bold text-violet-600"
                   />
                   {errors.amount && (
                     <p className="text-xs text-destructive">
@@ -199,12 +242,39 @@ export function SubmitPaymentDialog({
                   )}
                 </div>
                 <div className="space-y-2">
-                  <Label>Method</Label>
-                  <Input
-                    {...register("paymentMethod")}
-                    placeholder="e.g. bKash, Bank"
-                    className="bg-background/50"
-                  />
+                  <Label>Payment Method</Label>
+                  <Select
+                    onValueChange={(val) => setValue("paymentMethod", val)}
+                  >
+                    <SelectTrigger className="bg-background/50">
+                      <SelectValue placeholder="Select Method" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {managerPaymentMethods.length > 0 ? (
+                        managerPaymentMethods.map((method, idx) => (
+                          <SelectItem
+                            key={idx}
+                            value={`${method.type} - ${method.accountNumber || method.phoneNumber}`}
+                          >
+                            <div className="flex flex-col text-left">
+                              <span className="capitalize font-medium">
+                                {method.type}{" "}
+                                {method.label ? `(${method.label})` : ""}
+                              </span>
+                              <span className="text-[10px] text-muted-foreground">
+                                {method.accountNumber || method.phoneNumber} -{" "}
+                                {method.accountName}
+                              </span>
+                            </div>
+                          </SelectItem>
+                        ))
+                      ) : (
+                        <SelectItem value="manual" disabled>
+                          No methods added by manager
+                        </SelectItem>
+                      )}
+                    </SelectContent>
+                  </Select>
                   {errors.paymentMethod && (
                     <p className="text-xs text-destructive">
                       {errors.paymentMethod.message}

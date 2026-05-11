@@ -10,7 +10,7 @@ export interface IPayment extends Document {
   status: TPaymentStatus;
   paymentMethod: string;
   ss: string; // Screenshot URL mandatory
-  month: string;
+  months: string[];
   year: number;
   note?: string;
   createdAt: Date;

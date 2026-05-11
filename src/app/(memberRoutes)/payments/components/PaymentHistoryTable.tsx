@@ -51,7 +51,7 @@ export function PaymentHistoryTable({
               </h4>
               <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
                 <span className="flex items-center gap-1">
-                  <Calendar className="w-3 h-3" /> {payment.month}{" "}
+                  <Calendar className="w-3 h-3" /> {payment.months.join(", ")}{" "}
                   {payment.year}
                 </span>
                 <span>•</span>

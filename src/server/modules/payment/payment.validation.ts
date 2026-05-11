@@ -4,7 +4,7 @@ export const createPaymentSchema = z.object({
   subscription: z.string().min(1, "Subscription is required"),
   amount: z.number().positive("Amount must be positive"),
   paymentMethod: z.string().min(1, "Payment method is required"),
-  month: z.string().min(1, "Month is required"),
+  months: z.array(z.string()).min(1, "At least one month is required"),
   year: z.number().int().min(2024, "Invalid year"),
   ss: z.string().url("Screenshot proof is required"),
   note: z.string().optional(),

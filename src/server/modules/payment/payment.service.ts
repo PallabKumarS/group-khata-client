@@ -47,7 +47,7 @@ const submitPayment = async (senderId: string, payload: Partial<IPayment>) => {
   const existingPayment = await PaymentModel.findOne({
     subscription: validatedData.subscription,
     sender: senderId,
-    month: validatedData.month,
+    months: { $in: validatedData.months },
     year: validatedData.year,
     status: { $ne: "rejected" },
   });

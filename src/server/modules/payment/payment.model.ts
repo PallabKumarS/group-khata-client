@@ -18,7 +18,7 @@ const paymentSchema = new Schema<IPayment>(
     },
     paymentMethod: { type: String, required: true },
     ss: { type: String, required: true },
-    month: { type: String, required: true },
+    months: [{ type: String, required: true }],
     year: { type: Number, required: true },
     note: { type: String },
   },

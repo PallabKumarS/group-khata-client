@@ -55,7 +55,7 @@ export function PaymentDetailsDialog({
                 Period
               </p>
               <p className="font-medium">
-                {payment.month} {payment.year}
+                {payment.months.join(", ")} {payment.year}
               </p>
             </div>
             <div className="space-y-1">

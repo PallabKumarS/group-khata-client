@@ -10,7 +10,7 @@ export interface TPayment {
   receiver: TUser;
   amount: number;
   paymentMethod: string;
-  month: string;
+  months: string[];
   year: number;
   ss: string;
   note?: string;
