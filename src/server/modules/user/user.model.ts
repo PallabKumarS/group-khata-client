@@ -16,6 +16,21 @@ const userSchema = new Schema<TUser, IUser>(
     address: { type: String },
     phone: { type: String },
     profileImg: { type: String },
+    paymentMethods: [
+      {
+        type: {
+          type: String,
+          enum: ["bkash", "nagad", "dbbl", "bank", "cash", "other"],
+        },
+        label: { type: String },
+        accountName: { type: String },
+        accountNumber: { type: String },
+        phoneNumber: { type: String },
+        bankName: { type: String },
+        branchName: { type: String },
+        isPrimary: { type: Boolean, default: false },
+      },
+    ],
     status: { type: String, enum: ["active", "blocked"], default: "active" },
     isDeleted: { type: Boolean, default: false },
     forgotPasswordToken: { type: Number, default: null },

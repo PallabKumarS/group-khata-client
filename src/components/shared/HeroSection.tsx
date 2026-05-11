@@ -94,25 +94,25 @@ export default function HeroSection() {
     tl.fromTo(
       headingRef.current,
       { opacity: 0, y: 60 },
-      { opacity: 1, y: 0, duration: 0.9 }
+      { opacity: 1, y: 0, duration: 0.9 },
     )
       .fromTo(
         subRef.current,
         { opacity: 0, y: 40 },
         { opacity: 1, y: 0, duration: 0.8 },
-        "-=0.5"
+        "-=0.5",
       )
       .fromTo(
         ctaRef.current,
         { opacity: 0, y: 30 },
         { opacity: 1, y: 0, duration: 0.7 },
-        "-=0.4"
+        "-=0.4",
       )
       .fromTo(
         [card1Ref.current, card2Ref.current, card3Ref.current],
         { opacity: 0, y: 50, scale: 0.9 },
         { opacity: 1, y: 0, scale: 1, duration: 0.7, stagger: 0.15 },
-        "-=0.3"
+        "-=0.3",
       );
 
     // Floating animation for the stat cards
@@ -129,7 +129,7 @@ export default function HeroSection() {
   return (
     <section
       ref={containerRef}
-      className="relative min-h-[92vh] flex flex-col items-center justify-center overflow-hidden px-4"
+      className="relative min-h-[92vh] flex flex-col items-center justify-center overflow-hidden px-4 pt-24 md:pt-0"
     >
       {/* Animated canvas background */}
       <canvas
@@ -277,6 +277,6 @@ const StatCard = React.forwardRef<HTMLDivElement, StatCardProps>(
         {trend}
       </span>
     </div>
-  )
+  ),
 );
 StatCard.displayName = "StatCard";
