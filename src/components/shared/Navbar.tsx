@@ -7,17 +7,34 @@ import { Menu, X } from "lucide-react";
 import { useAppContext } from "@/providers/ContextProvider";
 import { ThemeToggle } from "./ThemeToggle";
 
-const navLinks = [
-  { label: "Features", href: "#features" },
-  { label: "Members", href: "/members" },
-  { label: "Dashboard", href: "/dashboard" },
-];
+
 
 export default function Navbar() {
   const { user, logout } = useAppContext();
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const navRef = useRef<HTMLElement>(null);
+
+  const getDynamicNavLinks = () => {
+    const links = [{ label: "Features", href: "/#features" }];
+
+    if (user) {
+      links.push({ label: "Dashboard", href: "/dashboard" });
+      links.push({ label: "Subscriptions", href: "/subscriptions" });
+
+      if (user.role === "manager" || user.role === "admin") {
+        links.push({ label: "Manage", href: "/manage" });
+      }
+
+      if (user.role === "admin") {
+        links.push({ label: "Users", href: "/users" });
+      }
+    }
+
+    return links;
+  };
+
+  const navLinks = getDynamicNavLinks();
 
   // Animate in on mount
   useEffect(() => {
