@@ -80,13 +80,13 @@ export function PaymentDetailsDialog({
             <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">
               Proof Screenshot
             </p>
-            <div className="relative aspect-video rounded-2xl overflow-hidden border border-border/40 bg-black/10 group cursor-zoom-in">
+            <div className="relative rounded-2xl overflow-hidden border border-border/40 bg-black/10 group cursor-zoom-in">
               <Image
                 src={payment.ss}
                 alt="Payment proof"
-                width={500}
-                height={500}
-                className="fill object-contain"
+                width={700}
+                height={350}
+                className="mx-auto w-80"
               />
             </div>
           </div>

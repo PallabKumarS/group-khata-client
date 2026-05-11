@@ -239,6 +239,30 @@ const kickMember = async (
     throw new AppError(httpStatus.NOT_FOUND, "User is not a member");
   }
 
+  // Check if member has paid for the current month
+  const now = new Date();
+  const monthNames = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ];
+  const currentMonth = monthNames[now.getMonth()];
+  const currentYear = now.getFullYear();
+
+  const hasPaid = await PaymentModel.exists({
+    subscription: subscriptionId,
+    sender: userId,
+    months: { $in: [currentMonth] },
+    year: currentYear,
+    status: "verified",
+  });
+
+  if (hasPaid) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "Cannot kick a member who has already paid for the current month.",
+    );
+  }
+
   subscription.members.splice(memberIndex, 1);
   await subscription.save();
 

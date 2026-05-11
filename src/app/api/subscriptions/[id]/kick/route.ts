@@ -10,7 +10,7 @@ export async function POST(
 ) {
   try {
     await connectDB();
-    const decoded = await requireAuth(request, ["manager"]);
+    const decoded = await requireAuth(request, ["manager", "admin"]);
     const { id } = await params;
     const body = await request.json();
 
