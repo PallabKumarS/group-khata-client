@@ -1,5 +1,9 @@
 const LoadingComponent = () => {
-  return <div></div>;
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <h1 className="text-2xl font-bold text-primary">Loading...</h1>
+    </div>
+  );
 };
 
 export default LoadingComponent;
