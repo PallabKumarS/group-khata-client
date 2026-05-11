@@ -185,6 +185,15 @@ Error:
 
 # 9. Database Rules
 
+## Important
+
+Do NOT initialize new mongoose connection. use it only from lib/db.ts.
+
+## DB Setup
+
+write model.ts,services.ts and other necessary file inside a folder inside
+server/modules.
+
 ## Mongoose Models
 
 - One model per file
