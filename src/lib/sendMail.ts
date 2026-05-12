@@ -1,17 +1,18 @@
-import config from "@/server/config";
+import { config } from "@/server/config";
 import nodemailer from "nodemailer";
 import { MailOptions } from "nodemailer/lib/smtp-transport";
 
 // Base email sending function
 const sendEmail = async (email: string, html: string, subject: string) => {
+  const cfg = await config();
   try {
     const transporter = nodemailer.createTransport({
       host: "smtp.gmail.com",
       port: 587,
       secure: false,
       auth: {
-        user: config.sender_email,
-        pass: config.sender_app_pass,
+        user: cfg.sender_email,
+        pass: cfg.sender_app_pass,
       },
       tls: {
         rejectUnauthorized: false,
@@ -77,7 +78,7 @@ export const sendPasswordResetEmail = async (
 export const sendJoinRequestEmail = async (
   managerEmail: string,
   memberName: string,
-  groupName: string
+  groupName: string,
 ) => {
   const subject = `New Join Request - ${groupName}`;
   const html = `
@@ -99,7 +100,7 @@ export const sendJoinRequestEmail = async (
 export const sendRequestStatusEmail = async (
   memberEmail: string,
   groupName: string,
-  status: "accepted" | "rejected"
+  status: "accepted" | "rejected",
 ) => {
   const subject = `Join Request ${status === "accepted" ? "Accepted" : "Rejected"} - ${groupName}`;
   const html = `
@@ -122,7 +123,7 @@ export const sendPaymentReceivedEmail = async (
   managerEmail: string,
   memberName: string,
   amount: number,
-  groupName: string
+  groupName: string,
 ) => {
   const subject = `New Payment Received - ${groupName}`;
   const html = `
@@ -144,7 +145,7 @@ export const sendPaymentReceivedEmail = async (
 export const sendPaymentReminderEmail = async (
   memberEmail: string,
   groupName: string,
-  amount: number
+  amount: number,
 ) => {
   const subject = `Payment Due Reminder - ${groupName}`;
   const html = `
@@ -161,4 +162,3 @@ export const sendPaymentReminderEmail = async (
   `;
   return sendEmail(memberEmail, html, subject);
 };
-

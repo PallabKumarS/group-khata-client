@@ -6,7 +6,7 @@ import type { TLoginUser } from "./auth.interface";
 import type { JwtPayload } from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import type { TUser } from "../user/user.interface";
-import config from "@/server/config";
+import { config } from "@/server/config";
 import { sendPasswordResetEmail } from "@/lib/sendMail";
 
 // login user here
@@ -54,16 +54,18 @@ const loginUser = async (payload: TLoginUser) => {
     email: user.email,
   };
 
+  const cfg = await config();
+
   const accessToken = createToken(
     jwtPayload,
-    config.jwt_access_secret as string,
-    config.jwt_access_expires_in as string,
+    cfg.jwt_access_secret as string,
+    cfg.jwt_access_expires_in as string,
   );
 
   const refreshToken = createToken(
     jwtPayload,
-    config.jwt_refresh_secret as string,
-    config.jwt_refresh_expires_in as string,
+    cfg.jwt_refresh_secret as string,
+    cfg.jwt_refresh_expires_in as string,
   );
 
   return {
@@ -119,10 +121,12 @@ const changePassword = async (
     throw new AppError(httpStatus.FORBIDDEN, "Password do not match");
   }
 
+  const cfg = await config();
+
   //hash new password
   const newHashedPassword = await bcrypt.hash(
     payload.newPassword,
-    Number(config.bcrypt_salt_rounds),
+    Number(cfg.bcrypt_salt_rounds),
   );
 
   const result = await UserModel.findOneAndUpdate(
@@ -144,7 +148,10 @@ const changePassword = async (
 // refresh token here service here
 const refreshToken = async (token: string) => {
   // checking if the given token is valid
-  const decoded = verifyToken(token, config.jwt_refresh_secret as string);
+  const decoded = verifyToken(
+    token,
+    (await config()).jwt_refresh_secret as string,
+  );
 
   const { userId } = decoded;
 
@@ -170,10 +177,12 @@ const refreshToken = async (token: string) => {
     email: user.email,
   };
 
+  const cfg = await config();
+
   const accessToken = createToken(
     jwtPayload,
-    config.jwt_access_secret as string,
-    config.jwt_access_expires_in as string,
+    cfg.jwt_access_secret as string,
+    cfg.jwt_access_expires_in as string,
   );
 
   return {
@@ -225,9 +234,11 @@ const resetPassword = async (
     throw new AppError(httpStatus.NOT_FOUND, "Code is incorrect");
   }
 
+  const cfg = await config();
+
   const newHashedPassword = await bcrypt.hash(
     newPassword,
-    Number(config.bcrypt_salt_rounds),
+    Number(cfg.bcrypt_salt_rounds),
   );
 
   const updatedUser = await UserModel.findOneAndUpdate(
