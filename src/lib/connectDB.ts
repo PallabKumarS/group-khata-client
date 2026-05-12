@@ -1,12 +1,11 @@
 /** biome-ignore-all lint/suspicious/noExplicitAny: <> */
 "use server";
-import config from "@/server/config";
 import mongoose from "mongoose";
 
 const MONGODB_URI =
-  config.node_env === "development"
-    ? config.database_url_local!
-    : config.database_url_prod!;
+  process.env.NODE_ENV === "development"
+    ? process.env.DATABASE_URL_LOCAL!
+    : process.env.DATABASE_URL_DEV!;
 
 let cached = (global as any).mongoose;
 
