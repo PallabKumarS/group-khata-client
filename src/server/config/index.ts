@@ -1,3 +1,5 @@
+"use server";
+
 export default {
   port: process.env.PORT,
   database_url_local: process.env.DATABASE_URL_LOCAL,
