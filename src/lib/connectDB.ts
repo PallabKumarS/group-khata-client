@@ -6,7 +6,7 @@ import mongoose from "mongoose";
 const MONGODB_URI =
   config.node_env === "development"
     ? config.database_url_local!
-    : config.database_url_prod!;
+    : config.database_url_dev!;
 
 let cached = (global as any).mongoose;
 
