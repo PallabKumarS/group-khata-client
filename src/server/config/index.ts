@@ -1,6 +1,4 @@
-"use server";
-
-export const config = async () => ({
+export default {
   port: process.env.PORT,
   database_url_local: process.env.DATABASE_URL_LOCAL,
   database_url_dev: process.env.DATABASE_URL_DEV,
@@ -15,4 +13,4 @@ export const config = async () => ({
   client: process.env.CLIENT,
   sender_email: process.env.SENDER_EMAIL,
   sender_app_pass: process.env.SENDER_APP_PASS,
-});
+};
